@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>指令与指令之间的交互</title>
+	<script type="text/javascript" src='angular.js'></script>
+</head>
+<body ng-app='myapp'>
+<div>
+<!-- 每个指令外部最好再包一层div -->
+	<div>
+		<superman strength> 动感超人一</supuerman>
+	</div>
+	<div>
+		<superman strength> 动感超人一</supuerman>
+	</div>
+	<div>
+		<superman strength> 动感超人一</supuerman>
+	</div>
+</div>
+	<script type="text/javascript">
+	// 指令之间的交互通过controller属性暴露公共方法 使用require引入该指令
+		var app = angular.module('myapp',[]);
+		app.directive('superman',function(){
+			return{
+				
+				restrict:'AE',
+				
+				controller:function($scope){
+					$scope.ability = [];
+					// this指代的是controller
+					this.addStrength = function(){
+						$scope.ability.push('strength');
+					}
+					this.addSpeed = function(){
+						
+						$scope.ability.push('speed');
+					}
+					this.addLight = function(){
+						
+						$scope.ability.push('light');
+					}
+				},
+				link:function(scope,ele,attr){
+					console.log(ele);
+					ele.bind('mouseenter',function(){
+						ele.css('backgroundColor','red');
+						console.log(scope.ability);
+						
+					})
+					ele.bind('mouseleave',function(){
+						ele.css('backgroundColor','green');
+					})
+				}
+			}
+		})
+		app.directive('strength',function(){
+			return{
+				replace:true,
+				restrict:'AE',
+				
+				require:'^superman',
+				link:function(scope,ele,attr,supermanCtrl){
+					supermanCtrl.addStrength();
+				}
+
+			}
+		})
+		app.directive('speed',function(){
+			return{
+				
+				restrict:'AE',
+				
+				require:'^superman',
+				link:function(scope,ele,attr,supermanCtrl){
+					supermanCtrl.addSpeed();
+				}
+
+			}
+		})
+		app.directive('light',function(){
+			return{
+				
+				restrict:'AE',
+				
+				require:'^superman',
+				link:function(scope,ele,attr,supermanCtrl){
+					supermanCtrl.addLight();
+				}
+
+			}
+		})
+	</script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>指令与控制器之间的交互</title>
+	<script type="text/javascript" src='angular.js'></script>
+</head>
+<body ng-app='myapp'>
+	<div ng-controller='myCtrl'>
+		<hello emitAttr='loadOne()'>滑动触发事件</hello>
+		<hello emitAttr='loadTwo()'>滑动触发事件</hello>
+
+	</div>
+	<script type="text/javascript">
+		var app = angular.module('myapp',[]);
+		app.controller('myCtrl',function($scope){
+			$scope.loadOne = function(){
+				console.log('load one');
+			}
+			$scope.loadTwo = function(){
+				console.log('load Two');
+			}
+		})
+		// 当同一指令中需要执行不同的方法时 使用指令中的实行
+		app.directive('hello',function(){
+			return{
+				transclude:true,
+				template:'<div ng-transclude></div>',
+				link:function(scope,ele,attr){
+					ele.bind('mouseenter',function(){
+						scope.$apply(attr.emitattr);
+					})				
+				}
+			}
+		})
+	</script>
+</body>
+</html>
