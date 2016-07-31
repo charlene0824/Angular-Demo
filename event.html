@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>event事件的传播</title>
+	<script type="text/javascript" src='angular.js'></script>
+</head>
+<body ng-app='myapp'>
+	<!-- angular中发送事件可以使用$emit(向上发送事件）、$broadcast（向下发送事件）
+	$on来绑定事件 -->
+	<div ng-controller="parentCtrl">
+		<div ng-controller='selfCtrl'>
+			<span class='btn' ng-click='click()'>click me</span>
+			<div ng-controller='childCtrl'></div>
+		</div>
+		<div ng-controller='broCtrl'></div>
+	</div>
+	<script type="text/javascript">
+		var app = angular.module('myapp',[]);
+		app.controller('parentCtrl',function($scope){
+			$scope.$on('to-parent',function(e,d){
+				console.log('topartent'+d);
+			})
+		})
+		app.controller('selfCtrl',function($scope){	
+			$scope.$on('to-child',function(e,d){
+				console.log('toChild+child'+d);
+			})
+			$scope.click = function(){
+
+				$scope.$broadcast('to-child','haha');
+				$scope.$emit('to-parent','hehe');
+			}
+		})
+		app.controller('childCtrl',function($scope){
+			$scope.$on('to-child',function(e,d){
+				console.log('toChild+child'+d);
+			})
+		})
+		app.controller('broCtrl',function($scope){
+			$scope.$on('to-child',function(e,d){
+				console.log('toChildbto'+d);
+			})
+		})
+	</script>
+</body>
+</html>
